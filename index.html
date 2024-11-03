@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hello</title>
+    <link rel="stylesheet" href="style1.css">
+    <style>
+        /* Inline style to ensure error messages are visible */
+        .error {
+            color: red;
+            font-size: 0.9em;
+            visibility: visible;
+        }
+    </style>
+    <!--FireBase SDK-->
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+
+<body>
+    <form id="form">
+        <label for="mail">Email</label>
+        <input id="mail" type="text" required>
+        <p id="mailError" class="error"></p>
+
+        <label for="number">Phone Number</label>
+        <input type="text" id="number" required>
+        <p id="numberError" class="error"></p>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const formElement = document.getElementById("form");
+        const emailElement = document.getElementById("mail");
+        const numberElement = document.getElementById("number");
+        const mailErrorElement = document.getElementById("mailError");
+        const numberErrorElement = document.getElementById("numberError");
+
+        function validData(email, number) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const numberRegex = /^\d{10}$/;
+
+            let isValid = true;
+
+            // Email Validation
+            if (!email.match(emailRegex)) {
+                mailErrorElement.textContent = "Please enter a valid email (e.g., yourname@email.com)";
+                isValid = false;
+            } else {
+                mailErrorElement.textContent = "";
+            }
+
+            // Phone Number Validation
+            if (!number.match(numberRegex)) {
+                numberErrorElement.textContent = "Please enter a valid 10-digit phone number";
+                isValid = false;
+            } else {
+                numberErrorElement.textContent = "";
+            }
+
+            return isValid;
+        }
+
+        emailElement.addEventListener("blur", (e) => {
+            if (e.target.value === "") {
+                mailErrorElement.textContent = "Email is required";
+            } else {
+                mailErrorElement.textContent = "";
+            }
+        });
+
+        numberElement.addEventListener("blur", (e) => {
+            if (e.target.value === "") {
+                numberErrorElement.textContent = "Phone number is required";
+            } else {
+                numberErrorElement.textContent = "";
+            }
+        });
+
+        function SaveData( email,number){
+
+        
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyCcXmhIJThsVP5X-9IJCxvB4NIwGnyVn9c",
+
+            authDomain: "form-javascript-a909d.firebaseapp.com",
+
+            databaseURL: "https://form-javascript-a909d-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+            projectId: "form-javascript-a909d",
+
+            storageBucket: "form-javascript-a909d.firebasestorage.app",
+
+            messagingSenderId: "619888309410",
+
+            appId: "1:619888309410:web:6c3486fa3a433da572d3fb"
+
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.database().ref("ReqForm");
+
+        db.push({
+            email: email,
+            number: number
+        });
+        
+    }
+
+
+        formElement.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = emailElement.value;
+            const number = numberElement.value;
+
+            const res=validData(email,number);
+            if(res){
+                SaveData(email,number)
+            }
+        });
+    </script>
+
+</body>
+
+</html>
